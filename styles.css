@@ -1,0 +1,876 @@
+/*
+ Styles for the block_aiagents chat widget.
+
+ Geometry follows the Free AI and Agents family layout (Figma port):
+ composer card, icon row, round send button, model chip below the
+ composer, history tiles, hidden scrollbars.
+ */
+
+.aiagents {
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    line-height: 1.45;
+    position: relative;
+    /*
+     Fix the widget's height so messages and typing never grow the page.
+     The log scrolls; the block as a whole stays put.
+     */
+    height: min(520px, calc(100vh - 10rem));
+    min-height: 380px;
+    max-height: calc(100vh - 6rem);
+    --aiagents-card: #f4f5f7;
+    --aiagents-bubble: #e6e9ef;
+    --aiagents-line: #d5d8e0;
+    --aiagents-txt: #26303b;
+    --aiagents-dim: #75808f;
+    --aiagents-faint: #96a0ad;
+    --aiagents-accent: #0d6efd;
+    --aiagents-accent2: #5e37e6;
+}
+
+/* ---------- header (conversation title + quota + export + usefree.space) ---------- */
+.aiagents-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 4px 2px 7px;
+    border-bottom: 1px solid var(--aiagents-line);
+    flex: none;
+    min-width: 0;
+}
+
+.aiagents-title {
+    flex: 1;
+    line-height: 1.25;
+    min-width: 0;
+    margin: 0 2px;
+}
+
+.aiagents-title strong {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1d2733;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.aiagents-qpill {
+    background: none;
+    border: 0;
+    padding: 0;
+    margin-top: 1px;
+    color: var(--aiagents-faint);
+    font-size: 10.5px;
+    cursor: pointer;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    text-align: left;
+    box-shadow: none;
+}
+
+.aiagents-qpill:hover {
+    color: #6b7684;
+}
+
+.aiagents-qpill.out {
+    color: #c0392b;
+}
+
+.aiagents-hbtn {
+    background: none;
+    border: 0;
+    color: #8d97a4;
+    cursor: pointer;
+    padding: 3px;
+    margin-top: 1px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    box-shadow: none;
+}
+
+.aiagents-hbtn:hover {
+    background: #e8eaf0;
+    color: #3b4552;
+}
+
+.aiagents-hbtn svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+/* quota popup (family qpop menu) */
+.aiagents-qpop {
+    position: absolute;
+    top: 34px;
+    right: 8px;
+    width: 210px;
+    background: #fff;
+    border: 1px solid var(--aiagents-line);
+    border-radius: 10px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+    padding: 6px;
+    z-index: 40;
+}
+
+.aiagents-qpop .qnote {
+    color: var(--aiagents-faint);
+    font-size: 11px;
+    padding: 2px 10px 6px;
+}
+
+.aiagents-qpop .qrow {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--aiagents-txt);
+}
+
+.aiagents-qpop .qrow .qv {
+    color: var(--aiagents-faint);
+    white-space: nowrap;
+}
+
+.aiagents-qpop .qgo {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: 0;
+    color: var(--aiagents-accent);
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+.aiagents-qpop .qgo:hover {
+    background: #eef4ff;
+}
+
+/* ---------- log ---------- */
+.aiagents-log {
+    flex: 1 1 auto;
+    min-height: 0; /* let the log shrink instead of growing the block */
+    overflow-y: auto;
+    padding: 6px 2px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.aiagents-log::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.aiagents-msg {
+    padding: 9px 14px;
+    border-radius: 20px;
+    max-width: 88%;
+    white-space: pre-wrap;
+    word-break: break-word;
+    align-self: flex-end;
+    margin: 10px 0 2px;
+    background: var(--aiagents-bubble);
+    color: var(--aiagents-txt);
+}
+
+.aiagents-msg-ai {
+    align-self: stretch;
+    max-width: none;
+    margin: 8px 0 2px;
+    padding: 0 2px;
+    background: none;
+    border-radius: 0;
+    line-height: 1.55;
+}
+
+.aiagents-msg-ai p {
+    margin: 0 0 10px;
+}
+
+.aiagents-msg-ai > :last-child {
+    margin-bottom: 4px;
+}
+
+.aiagents-msg-ai pre {
+    background: #f8f9fb;
+    border: 1px solid var(--aiagents-line);
+    border-radius: 10px;
+    padding: 9px 12px;
+    margin: 6px 0 10px;
+    overflow-x: auto;
+    white-space: pre;
+    scrollbar-width: none;
+}
+
+.aiagents-msg-ai pre::-webkit-scrollbar {
+    display: none;
+}
+
+.aiagents-msg-ai code {
+    background: #eef0f4;
+    border: 1px solid var(--aiagents-line);
+    border-radius: 5px;
+    padding: 1px 5px;
+    font: 11.5px ui-monospace, Consolas, monospace;
+    word-break: break-word;
+}
+
+.aiagents-msg-ai pre code {
+    background: none;
+    border: 0;
+    padding: 0;
+}
+
+.aiagents-msg-ai ul,
+.aiagents-msg-ai ol {
+    margin: 6px 0 10px;
+    padding-left: 20px;
+}
+
+.aiagents-msg-ai blockquote {
+    border-left: 3px solid var(--aiagents-line);
+    padding-left: 10px;
+    margin: 8px 0;
+    color: var(--aiagents-dim);
+}
+
+.aiagents-msg-ai table {
+    border-collapse: collapse;
+    font-size: 12px;
+    max-width: 100%;
+}
+
+.aiagents-msg-ai th,
+.aiagents-msg-ai td {
+    border: 1px solid var(--aiagents-line);
+    padding: 4px 8px;
+}
+
+.aiagents-msg-ai a {
+    color: var(--aiagents-accent);
+}
+
+.aiagents-msg-pending {
+    opacity: 0.65;
+}
+
+.aiagents-msg-error {
+    align-self: flex-start;
+    background: #fdecea;
+    color: #b02a37;
+    border-radius: 12px;
+}
+
+.aiagents-sys {
+    color: var(--aiagents-faint);
+    font-size: 11.5px;
+    margin: 4px 0;
+    white-space: pre-line;
+    align-self: stretch;
+}
+
+/* per-message actions: copy on every turn, + retry + model on AI turns */
+.aiagents-msgactions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 4px 0 12px;
+}
+
+.aiagents-uacts {
+    justify-content: flex-end;
+}
+
+.aiagents-mact {
+    background: none;
+    border: 0;
+    padding: 2px;
+    cursor: pointer;
+    color: #7e8896;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none;
+}
+
+.aiagents-mact:hover {
+    color: #2b3542;
+}
+
+.aiagents-mact svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+}
+
+.aiagents-msgactions .aiagents-spacer {
+    flex: 1;
+}
+
+.aiagents-msub {
+    color: var(--aiagents-faint);
+    font-size: 10.5px;
+    white-space: nowrap;
+}
+
+/* thinking indicator (family pattern) */
+.aiagents-thinking {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--aiagents-dim);
+    margin: 6px 0 2px;
+    font-size: 12.5px;
+}
+
+.aiagents-spin {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 14px;
+    height: 14px;
+    flex: none;
+    border-radius: 50%;
+    border: 2px solid var(--aiagents-line);
+    border-top-color: var(--aiagents-accent2);
+    animation: aiagents-spin 0.8s linear infinite;
+}
+
+@keyframes aiagents-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aiagents-spin {
+        animation-duration: 2.4s;
+    }
+}
+
+/* web search tool card */
+.aiagents-toolcard {
+    background: #f8f9fb;
+    border: 1px solid var(--aiagents-line);
+    border-radius: 12px;
+    padding: 9px 12px;
+    margin: 6px 0 10px;
+    font-size: 12px;
+    color: var(--aiagents-dim);
+    align-self: stretch;
+}
+
+.aiagents-toolcard .aiagents-toolhead {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--aiagents-accent);
+    font-weight: 600;
+}
+
+/* ---------- history view ---------- */
+.aiagents-history {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 10px 2px;
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: none;
+}
+
+.aiagents-history::-webkit-scrollbar {
+    display: none;
+}
+
+.aiagents-hrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.aiagents-hrow h3 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    flex: 1;
+}
+
+.aiagents-hnew {
+    background: var(--aiagents-accent);
+    color: #fff;
+    border: 0;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.aiagents-hnew:hover {
+    filter: brightness(1.05);
+}
+
+.aiagents-history-item {
+    width: 100%;
+    text-align: left;
+    background: #f4f5f7;
+    border: 0;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin: 6px 0;
+    color: var(--aiagents-txt);
+    cursor: pointer;
+    position: relative;
+    display: block;
+}
+
+.aiagents-history-item:hover {
+    background: #eceef2;
+}
+
+.aiagents-history-item .ht {
+    font-size: 12.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 20px;
+}
+
+.aiagents-history-item .hd {
+    font-size: 10.5px;
+    color: var(--aiagents-faint);
+    margin-top: 3px;
+}
+
+.aiagents-history-item .hx {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+    border: 0;
+    background: none;
+    border-radius: 6px;
+    color: var(--aiagents-faint);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    line-height: 1;
+}
+
+.aiagents-history-item .hx:hover {
+    background: #e3e6eb;
+    color: #c0392b;
+}
+
+.aiagents-hempty {
+    color: var(--aiagents-faint);
+    font-size: 12px;
+    margin-top: 14px;
+    text-align: center;
+}
+
+/* ---------- composer (family card) ---------- */
+.aiagents-composer {
+    flex: none;
+    padding: 6px 0 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.aiagents-history-open .aiagents-composer {
+    display: none;
+}
+
+/* composer hidden while the history view is open (history is a sibling view) */
+[dir="rtl"] .aiagents-crow {
+    flex-direction: row-reverse;
+}
+
+.aiagents-card {
+    background: var(--aiagents-card);
+    border-radius: 14px;
+    padding: 7px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/*
+ Textarea: no resize handle, auto-grow handled by JS, scrollbar hidden
+ (appearance only — scrolling itself still works).
+*/
+.aiagents-text {
+    background: transparent;
+    border: 0;
+    outline: none;
+    color: var(--aiagents-txt);
+    font: inherit;
+    font-size: 13px;
+    resize: none;
+    max-height: 99px;
+    line-height: 21px;
+    padding: 0 1px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    box-shadow: none;
+}
+
+.aiagents-text::-webkit-scrollbar {
+    display: none;
+}
+
+.aiagents-text::placeholder {
+    color: #a3adbb;
+}
+
+.aiagents-text:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.aiagents-crow {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+}
+
+.aiagents-cbtn {
+    background: none;
+    border: 0;
+    color: #69737f;
+    cursor: pointer;
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    box-shadow: none;
+}
+
+.aiagents-cbtn:hover {
+    background: #e4e7ec;
+    color: #3b4552;
+}
+
+.aiagents-cbtn svg {
+    width: 19px;
+    height: 19px;
+    display: block;
+}
+
+.aiagents-cbtn.listening,
+.aiagents-globe.on {
+    color: #0d99ff;
+    background: rgba(13, 153, 255, 0.14);
+}
+
+.aiagents-rgt {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.aiagents-send {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 0;
+    background: var(--aiagents-accent);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    padding: 0;
+    box-shadow: none;
+}
+
+.aiagents-send:hover {
+    background: #0b5ed7;
+}
+
+.aiagents-send:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.aiagents-send svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+}
+
+/* ---------- model chip below the composer ---------- */
+.aiagents-mspot {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.aiagents-mchip {
+    background: #eef0f4;
+    border: 1px solid var(--aiagents-line);
+    border-radius: 9px;
+    color: #5a6472;
+    font-size: 11px;
+    padding: 4px 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: none;
+}
+
+.aiagents-mchip:hover {
+    background: #e4e7ec;
+    color: #334053;
+}
+
+.aiagents-mchip svg {
+    stroke: #9aa4b1;
+    fill: none;
+}
+
+/* get help chip beside the model chip */
+.aiagents-hlp {
+    background: #eef0f4;
+    border: 1px solid var(--aiagents-line);
+    border-radius: 9px;
+    color: #5a6472;
+    font-size: 11px;
+    padding: 4px 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: none;
+}
+
+.aiagents-hlp:hover {
+    background: #e4e7ec;
+    color: #334053;
+}
+
+.aiagents-hlp svg {
+    width: 12px;
+    height: 12px;
+    display: block;
+}
+
+/* get help menu: floating overlay like the model menu */
+.aiagents-helpmenu {
+    position: absolute;
+    bottom: 56px;
+    left: 14px;
+    width: 242px;
+    background: #fff;
+    border: 1px solid var(--aiagents-line);
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+    z-index: 31;
+}
+
+.aiagents-hrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: 0;
+    padding: 8px 8px;
+    border-radius: 7px;
+    color: var(--aiagents-txt);
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: none;
+}
+
+.aiagents-hrow:hover {
+    background: #eef0f4;
+    color: var(--aiagents-txt);
+}
+
+.aiagents-hrow svg {
+    width: 17px;
+    height: 17px;
+    flex: none;
+    color: #6b7684;
+}
+
+.aiagents-hrow .ht {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+.aiagents-hrow .ht small {
+    color: var(--aiagents-faint);
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.aiagents-hrow.soon {
+    opacity: .55;
+    cursor: default;
+}
+
+.aiagents-modelmenu {
+    /* floating overlay so opening it never squeezes the log or grows the block */
+    position: absolute;
+    bottom: 56px;
+    left: 14px;
+    width: 242px;
+    max-height: 260px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    background: #fff;
+    border: 1px solid var(--aiagents-line);
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+    z-index: 30;
+    margin-top: 2px;
+}
+
+.aiagents-msearch {
+    width: 100%;
+    border: 1px solid var(--aiagents-line);
+    border-radius: 7px;
+    font-size: 12px;
+    padding: 5px 8px;
+    margin-bottom: 4px;
+    box-shadow: none;
+}
+
+.aiagents-msearch:focus {
+    box-shadow: none;
+    border-color: var(--aiagents-accent);
+    outline: none;
+}
+
+.aiagents-mrows {
+    max-height: 240px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.aiagents-mrows::-webkit-scrollbar {
+    display: none;
+}
+
+.aiagents-mrow {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: 0;
+    color: var(--aiagents-txt);
+    padding: 7px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: none;
+}
+
+.aiagents-mrow:hover {
+    background: #eef0f4;
+}
+
+.aiagents-mrow.on {
+    color: var(--aiagents-accent2);
+    font-weight: 600;
+}
+
+.aiagents-mrow .aiagents-newb {
+    margin-left: 7px;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    color: #5e37e6;
+}
+
+/* one group per model: name row + thinking strip underneath */
+.aiagents-mgroup {
+    margin-bottom: 1px;
+}
+
+.aiagents-mgroup .aiagents-mrow + .aiagents-effort {
+    margin-top: 1px;
+}
+
+.aiagents-effort {
+    display: flex;
+    align-items: stretch;
+    gap: 3px;
+    padding: 0 4px 3px 8px;
+}
+
+.aiagents-effort button {
+    flex: 1;
+    min-width: 0;
+    background: #f1f2f6;
+    border: 1px solid var(--aiagents-line);
+    color: #6b7684;
+    border-radius: 6px;
+    font-size: 9px;
+    padding: 2px 0;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    box-shadow: none;
+}
+
+.aiagents-effort button:hover {
+    border-color: #b9c0ca;
+    color: var(--aiagents-txt);
+}
+
+.aiagents-effort button.on {
+    background: var(--aiagents-accent2);
+    border-color: var(--aiagents-accent2);
+    color: #fff;
+}
+
+.aiagents-mempty {
+    color: var(--aiagents-faint);
+    font-size: 11.5px;
+    padding: 6px 8px;
+}
