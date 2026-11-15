@@ -336,6 +336,7 @@ class pool {
      */
     protected function with_device(array $headers): array {
         $headers[] = 'X-Device-Id: ' . $this->deviceid;
+        $headers[] = 'X-App-Name: free-ai-agents-moodle';
         return $headers;
     }
 }
