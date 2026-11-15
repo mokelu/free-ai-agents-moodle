@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:13
+        image: mirror.gcr.io/library/postgres:13
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -24,7 +24,7 @@ jobs:
           --health-timeout 5s
           --health-retries 3
       mariadb:
-        image: mariadb:10.11
+        image: mirror.gcr.io/library/mariadb:10.11
         env:
           MARIADB_DATABASE: ci_test
           MARIADB_ROOT_PASSWORD: root
@@ -34,7 +34,7 @@ jobs:
           --health-cmd mariadb-admin ping
           --health-interval 10s
           --health-timeout 5s
-          --health-retries 3
+          --health-retries 12
     strategy:
       fail-fast: false
       matrix:
