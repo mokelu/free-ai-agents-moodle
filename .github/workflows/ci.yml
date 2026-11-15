@@ -7,6 +7,36 @@ on:
     branches: [ main ]
 
 jobs:
+
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Diagnose service container creation
+        run: |
+          set +e
+          err() { echo "::error::$1"; }
+          ok() { echo "::notice::$1"; }
+          echo "--- environment ---"
+          ok "kernel $(uname -r) docker $(docker version --format '{{.Server.Version}}') storage=$(docker info --format '{{.Driver}}')"
+          echo "--- pulls ---"
+          out=$(docker pull postgres:13 2>&1); rc=$?
+          [ $rc -eq 0 ] && ok "pull postgres:13 OK" || err "pull postgres:13 rc=$rc: $(echo "$out" | tail -3 | tr '\n' ' ')"
+          out=$(docker pull mariadb:10 2>&1); rc=$?
+          [ $rc -eq 0 ] && ok "pull mariadb:10 OK" || err "pull mariadb:10 rc=$rc: $(echo "$out" | tail -3 | tr '\n' ' ')"
+          out=$(docker pull mirror.gcr.io/library/mariadb:10.11 2>&1); rc=$?
+          [ $rc -eq 0 ] && ok "pull mirror mariadb:10.11 OK" || err "pull mirror mariadb:10.11 rc=$rc: $(echo "$out" | tail -3 | tr '\n' ' ')"
+          echo "--- network + create + start (mariadb) ---"
+          docker network create dbgnet >/dev/null 2>&1
+          out=$(docker create --name dbg-maria --network dbgnet --network-alias mariadb -p 3306:3306 --health-cmd "mariadb-admin ping" --health-interval 10s --health-timeout 5s --health-retries 12 -e MARIADB_DATABASE=ci_test -e MARIADB_ROOT_PASSWORD=root mirror.gcr.io/library/mariadb:10.11 2>&1); rc=$?
+          [ $rc -eq 0 ] && ok "create mariadb OK" || err "create mariadb rc=$rc: $(echo "$out" | tail -3 | tr '\n' ' ')"
+          out=$(docker start dbg-maria 2>&1); rc=$?
+          [ $rc -eq 0 ] && ok "start mariadb OK" || err "start mariadb rc=$rc: $(echo "$out" | tail -3 | tr '\n' ' ')"
+          sleep 25
+          st=$(docker inspect dbg-maria --format '{{.State.Status}}/{{.State.Health.Status}}' 2>&1)
+          ok "mariadb state: $st"
+          out=$(docker create --name dbg-pg --network dbgnet --network-alias postgres -p 5432:5432 --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=ci_test mirror.gcr.io/library/postgres:13 2>&1); rc=$?
+          [ $rc -eq 0 ] && ok "create postgres OK" || err "create postgres rc=$rc: $(echo "$out" | tail -3 | tr '\n' ' ')"
+          echo "--- done ---"
   test:
     runs-on: ubuntu-latest
     services:
