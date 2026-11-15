@@ -24,11 +24,9 @@ jobs:
           --health-timeout 5s
           --health-retries 3
       mariadb:
-        image: mariadb:10
+        image: mariadb:10.11
         env:
           MARIADB_DATABASE: ci_test
-          MARIADB_USER: root
-          MARIADB_PASSWORD: root
           MARIADB_ROOT_PASSWORD: root
         ports:
           - 3306:3306
@@ -69,7 +67,7 @@ jobs:
 
       - name: Install Moodle
         run: |
-          ci/bin/moodle-plugin-ci.phar install --plugin ./plugin --dbtype=${{ matrix.database }} --dbhost=127.0.0.1 --dbuser=root --dbpass=root
+          ci/bin/moodle-plugin-ci.phar install --plugin ./plugin --dbtype=${{ matrix.database }} --dbhost=127.0.0.1 --dbuser=${{ matrix.database == 'pgsql' && 'postgres' || 'root' }} --dbpass=${{ matrix.database == 'pgsql' && 'postgres' || 'root' }}
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
